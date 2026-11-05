@@ -15,15 +15,15 @@ export const STORAGE_KEYS = {
   MUTED: 'thermo_muted'
 };
 
-// Default Firebase Configuration (can be updated dynamically in Admin Settings or localStorage)
+// Official Firebase Project Credentials for project "danggo-fc4f0" (Thermo Champions Web)
 const DEFAULT_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDummyKeyReplaceInSettings12345678",
-  authDomain: "thermo-champions.firebaseapp.com",
-  databaseURL: "https://thermo-champions-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "thermo-champions",
-  storageBucket: "thermo-champions.appspot.com",
-  messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abcdef1234567890"
+  apiKey: "AIzaSyAyj6sz8L8JXy7DYbI0J3TDb-e5oxsfXpM",
+  authDomain: "danggo-fc4f0.firebaseapp.com",
+  databaseURL: "https://danggo-fc4f0-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "danggo-fc4f0",
+  storageBucket: "danggo-fc4f0.firebasestorage.app",
+  messagingSenderId: "189815163",
+  appId: "1:189815163:web:ac10e46dffb10182b005de"
 };
 
 /**
@@ -40,8 +40,27 @@ export function getDeviceToken() {
 
 /**
  * Get current Firebase Configuration
+ * Also auto-detects ?db= URL parameter if shared by Teacher
  */
 export function getFirebaseConfig() {
+  // Check if a database URL was passed in the URL (e.g. from teacher's share link)
+  try {
+    if (typeof window !== 'undefined' && window.location && window.location.search) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const dbParam = urlParams.get('db');
+      if (dbParam) {
+        const decoded = decodeURIComponent(dbParam).trim();
+        if (decoded.startsWith('https://')) {
+          const cfg = { ...DEFAULT_FIREBASE_CONFIG, databaseURL: decoded };
+          localStorage.setItem(STORAGE_KEYS.FIREBASE_CONFIG, JSON.stringify(cfg));
+          return cfg;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('[FirebaseConfig] URL param parsing error:', e);
+  }
+
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.FIREBASE_CONFIG);
     if (saved) {

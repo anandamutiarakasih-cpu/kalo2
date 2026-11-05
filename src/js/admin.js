@@ -29,12 +29,24 @@ class ThermoAdminApp {
     this.bindEvents();
     this.loadStoredConfig();
 
+    // Listen to live database connection status
+    dbService.listenToConnection((isConnected, err) => {
+      if (isConnected) {
+        this.updateConnectionStatus(true, 'Firebase Terhubung');
+        this.toggleAlertBanner(false);
+      } else {
+        const msg = err && err.message ? err.message : 'Database Belum Terhubung';
+        this.updateConnectionStatus(false, 'Offline / Belum Terhubung');
+        this.toggleAlertBanner(true, msg);
+      }
+    });
+
     try {
       await ensureAuthenticated();
-      this.updateConnectionStatus(true, 'Firebase Terhubung');
     } catch (e) {
-      console.warn('[ThermoAdmin] Firebase connection warning:', e);
-      this.updateConnectionStatus(false, 'Gagal Terhubung ke Firebase');
+      console.warn('[ThermoAdmin] Firebase auth warning:', e);
+      this.updateConnectionStatus(false, 'Auth Belum Aktif');
+      this.toggleAlertBanner(true, e.message);
     }
 
     // Check if there is an active session id stored in localStorage
@@ -66,11 +78,61 @@ class ThermoAdminApp {
     }
   }
 
+  toggleAlertBanner(show, customMessage = '') {
+    const banner = document.getElementById('firebase-alert-banner');
+    const textEl = document.getElementById('firebase-alert-text');
+    if (!banner) return;
+
+    if (show) {
+      banner.style.display = 'block';
+      if (textEl && customMessage) {
+        textEl.textContent = customMessage;
+      }
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
   bindEvents() {
     // Config Save & Test
     const btnSaveCfg = document.getElementById('btn-save-config');
     if (btnSaveCfg) {
       btnSaveCfg.addEventListener('click', () => this.handleSaveConfig());
+    }
+
+    // Preset buttons
+    const btnPresetSg = document.getElementById('btn-preset-sg');
+    if (btnPresetSg) {
+      btnPresetSg.addEventListener('click', () => {
+        const urlInput = document.getElementById('cfg-firebase-url');
+        if (urlInput) urlInput.value = 'https://danggo-fc4f0-default-rtdb.asia-southeast1.firebasedatabase.app';
+        this.handleSaveConfig();
+      });
+    }
+
+    const btnPresetUs = document.getElementById('btn-preset-us');
+    if (btnPresetUs) {
+      btnPresetUs.addEventListener('click', () => {
+        const urlInput = document.getElementById('cfg-firebase-url');
+        if (urlInput) urlInput.value = 'https://danggo-fc4f0-default-rtdb.firebaseio.com';
+        this.handleSaveConfig();
+      });
+    }
+
+    // Setup Guide Modal
+    const btnOpenGuide = document.getElementById('btn-open-setup-guide');
+    if (btnOpenGuide) {
+      btnOpenGuide.addEventListener('click', () => openModal('modal-setup-guide'));
+    }
+
+    const btnCloseGuide = document.getElementById('btn-close-setup-guide');
+    if (btnCloseGuide) {
+      btnCloseGuide.addEventListener('click', () => closeModal('modal-setup-guide'));
+    }
+
+    const btnAckGuide = document.getElementById('btn-ack-setup-guide');
+    if (btnAckGuide) {
+      btnAckGuide.addEventListener('click', () => closeModal('modal-setup-guide'));
     }
 
     // Modal: Buat Sesi Baru
@@ -115,9 +177,11 @@ class ThermoAdminApp {
           return;
         }
         const origin = window.location.origin + window.location.pathname.replace(/admin\.html.*$/, 'index.html');
-        const link = `${origin}?session=${this.currentSession.sessionCode}`;
+        const cfg = getFirebaseConfig();
+        const dbParam = cfg && cfg.databaseURL ? `&db=${encodeURIComponent(cfg.databaseURL)}` : '';
+        const link = `${origin}?session=${this.currentSession.sessionCode}${dbParam}`;
         navigator.clipboard.writeText(link);
-        showToast('Link HP Siswa disalin! Bagikan ke grup kelas.', 'success');
+        showToast('Link HP Siswa (dengan sinkronisasi database) disalin! Bagikan ke grup kelas.', 'success');
       });
     }
 

@@ -267,7 +267,9 @@ class ThermoClientApp {
       this.updateNavbarPills();
     } catch (err) {
       console.error('[ThermoApp] Session verify error:', err);
-      if (msgEl) msgEl.innerHTML = '<span style="color:#dc2626;">Terjadi kesalahan koneksi database.</span>';
+      const detail = err && err.message ? err.message : 'Pastikan perangkat terhubung ke internet dan database Firebase telah aktif.';
+      if (msgEl) msgEl.innerHTML = `<span style="color:#dc2626;">❌ Kesalahan koneksi: ${detail}</span>`;
+      showToast('Gagal menghubungi database Firebase.', 'error');
     }
   }
 

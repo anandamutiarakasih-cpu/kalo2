@@ -14,7 +14,7 @@ import {
   runTransaction,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { getFirebaseApp, getDeviceToken } from "./config.js";
+import { getFirebaseApp, getDeviceToken, getFirebaseConfig } from "./config.js";
 import { ensureAuthenticated } from "./auth.js";
 import { getPredicate } from "../../data/questions.js";
 
@@ -26,8 +26,9 @@ export function getRTDB() {
   if (dbInstance) return dbInstance;
   const app = getFirebaseApp();
   if (!app) return null;
+  const cfg = getFirebaseConfig();
   try {
-    dbInstance = getDatabase(app);
+    dbInstance = getDatabase(app, cfg.databaseURL);
     initServerTimeSync();
     return dbInstance;
   } catch (e) {
@@ -37,11 +38,42 @@ export function getRTDB() {
 }
 
 /**
+ * Reset database instance (useful when user updates the databaseURL in settings)
+ */
+export function resetRTDBInstance() {
+  dbInstance = null;
+  timeOffsetListenerActive = false;
+  return getRTDB();
+}
+
+/**
+ * Listen to database connection state (.info/connected)
+ */
+export function listenToConnection(callback) {
+  const db = getRTDB();
+  if (!db) {
+    if (callback) callback(false, new Error('Database Realtime tidak tersedia.'));
+    return () => {};
+  }
+
+  const connectedRef = ref(db, ".info/connected");
+  const listener = onValue(connectedRef, (snap) => {
+    const isConnected = snap.val() === true;
+    if (callback) callback(isConnected);
+  }, (err) => {
+    console.warn('[RTDB] Connection listener error:', err);
+    if (callback) callback(false, err);
+  });
+
+  return () => off(connectedRef, 'value', listener);
+}
+
+/**
  * Synchronize device clock with Firebase server clock
  */
 export function initServerTimeSync() {
   if (timeOffsetListenerActive) return;
-  const db = dbInstance || getDatabase(getFirebaseApp());
+  const db = dbInstance || getRTDB();
   if (!db) return;
 
   try {
@@ -68,7 +100,7 @@ export function getSyncedServerNow() {
 export async function createSession(title = 'Turnamen Kalor IPA', customCode = '') {
   await ensureAuthenticated();
   const db = getRTDB();
-  if (!db) throw new Error('Database Realtime tidak tersedia.');
+  if (!db) throw new Error('Database Realtime tidak tersedia. Pastikan Realtime Database sudah dibuat di Firebase Console.');
 
   const code = (customCode && customCode.trim())
     ? customCode.trim().toUpperCase()
@@ -106,7 +138,9 @@ export async function createSession(title = 'Turnamen Kalor IPA', customCode = '
  */
 export async function getSessionByCode(rawCode) {
   const db = getRTDB();
-  if (!db) return null;
+  if (!db) {
+    throw new Error('Database Realtime belum siap. Periksa konfigurasi Firebase.');
+  }
 
   const code = (rawCode || '').trim().toUpperCase();
   if (!code) return null;
@@ -125,7 +159,7 @@ export async function getSessionByCode(rawCode) {
     };
   } catch (err) {
     console.error('[RTDB] Error looking up session code:', err);
-    return null;
+    throw err;
   }
 }
 

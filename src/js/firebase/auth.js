@@ -33,8 +33,7 @@ export function getFirebaseAuth() {
 export async function ensureAuthenticated() {
   const auth = getFirebaseAuth();
   if (!auth) {
-    console.warn('[FirebaseAuth] Firebase Auth is not available.');
-    return null;
+    throw new Error('Firebase Auth tidak dapat diinisialisasi. Periksa koneksi internet Anda.');
   }
 
   if (auth.currentUser) {
@@ -48,8 +47,13 @@ export async function ensureAuthenticated() {
     console.log('[FirebaseAuth] Signed in anonymously as uid:', currentUser.uid);
     return currentUser;
   } catch (err) {
-    console.warn('[FirebaseAuth] Anonymous sign-in warning:', err.message);
-    return null;
+    console.warn('[FirebaseAuth] Anonymous sign-in warning:', err.code, err.message);
+    if (err.code === 'auth/admin-restricted-operation' || err.code === 'auth/operation-not-allowed') {
+      const msg = 'Layanan "Anonymous Sign-in" belum diaktifkan di Firebase Console! Buka Firebase Console -> Authentication -> Sign-in method -> Aktifkan Anonymous.';
+      console.error(msg);
+      throw new Error(msg);
+    }
+    throw err;
   }
 }
 
