@@ -15,15 +15,16 @@ export const STORAGE_KEYS = {
   MUTED: 'thermo_muted'
 };
 
-// Official Firebase Project Credentials for project "danggo-fc4f0" (Thermo Champions Web)
+// Official Firebase Project Credentials for project "kalor3-ff4af"
 const DEFAULT_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAyj6sz8L8JXy7DYbI0J3TDb-e5oxsfXpM",
-  authDomain: "danggo-fc4f0.firebaseapp.com",
-  databaseURL: "https://danggo-fc4f0-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "danggo-fc4f0",
-  storageBucket: "danggo-fc4f0.firebasestorage.app",
-  messagingSenderId: "189815163",
-  appId: "1:189815163:web:ac10e46dffb10182b005de"
+  apiKey: "AIzaSyCErNW-portvbj7qSL-cCK1DaWNpW2yRFg",
+  authDomain: "kalor3-ff4af.firebaseapp.com",
+  databaseURL: "https://kalor3-ff4af-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "kalor3-ff4af",
+  storageBucket: "kalor3-ff4af.firebasestorage.app",
+  messagingSenderId: "137693547137",
+  appId: "1:137693547137:web:4f17c9c5c8e7a47ad2db80",
+  measurementId: "G-HQGHW6NYJT"
 };
 
 /**
@@ -65,8 +66,12 @@ export function getFirebaseConfig() {
     const saved = localStorage.getItem(STORAGE_KEYS.FIREBASE_CONFIG);
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed && (parsed.apiKey || parsed.databaseURL)) {
+      // Ensure stored config matches the active projectId "kalor3-ff4af"
+      if (parsed && parsed.projectId === DEFAULT_FIREBASE_CONFIG.projectId && (parsed.apiKey || parsed.databaseURL)) {
         return { ...DEFAULT_FIREBASE_CONFIG, ...parsed };
+      } else {
+        // Discard obsolete project cache
+        localStorage.removeItem(STORAGE_KEYS.FIREBASE_CONFIG);
       }
     }
   } catch (e) {

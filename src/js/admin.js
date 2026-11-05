@@ -105,7 +105,7 @@ class ThermoAdminApp {
     if (btnPresetSg) {
       btnPresetSg.addEventListener('click', () => {
         const urlInput = document.getElementById('cfg-firebase-url');
-        if (urlInput) urlInput.value = 'https://danggo-fc4f0-default-rtdb.asia-southeast1.firebasedatabase.app';
+        if (urlInput) urlInput.value = 'https://kalor3-ff4af-default-rtdb.asia-southeast1.firebasedatabase.app';
         this.handleSaveConfig();
       });
     }
@@ -114,7 +114,7 @@ class ThermoAdminApp {
     if (btnPresetUs) {
       btnPresetUs.addEventListener('click', () => {
         const urlInput = document.getElementById('cfg-firebase-url');
-        if (urlInput) urlInput.value = 'https://danggo-fc4f0-default-rtdb.firebaseio.com';
+        if (urlInput) urlInput.value = 'https://kalor3-ff4af-default-rtdb.firebaseio.com';
         this.handleSaveConfig();
       });
     }

@@ -30,5 +30,10 @@
         "destination": "/admin.html"
       }
     ]
+  },
+  "auth": {
+    "providers": {
+      "anonymous": true
+    }
   }
 }

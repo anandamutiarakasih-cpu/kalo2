@@ -1,63 +1,6 @@
 {
   "rules": {
-    ".read": false,
-    ".write": false,
-
-    "sessions": {
-      ".read": true,
-      "$sessionId": {
-        ".write": "auth != null",
-        ".validate": "newData.hasChildren(['sessionCode', 'status'])",
-        "status": {
-          ".validate": "newData.val() == 'waiting' || newData.val() == 'started' || newData.val() == 'paused' || newData.val() == 'ended'"
-        }
-      }
-    },
-
-    "sessionCodes": {
-      ".read": true,
-      "$sessionCode": {
-        ".write": "auth != null"
-      }
-    },
-
-    "sessionGroups": {
-      "$sessionId": {
-        ".read": true,
-        "$groupKey": {
-          ".write": "auth != null",
-          ".validate": "newData.hasChildren(['groupNumber', 'deviceToken'])",
-          "groupNumber": {
-            ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 8"
-          }
-        }
-      }
-    },
-
-    "leaderboards": {
-      "$sessionId": {
-        ".read": true,
-        "$groupKey": {
-          ".write": "auth != null"
-        }
-      }
-    },
-
-    "submissions": {
-      "$sessionId": {
-        "$groupKey": {
-          ".read": "auth != null",
-          "$subKey": {
-            // Write allowed only once per question or stage step to prevent double scoring
-            ".write": "auth != null && (!data.exists() || data.child('deviceToken').val() == newData.child('deviceToken').val())"
-          }
-        }
-      }
-    },
-
-    "config": {
-      ".read": true,
-      ".write": "auth != null"
-    }
+    ".read": "auth != null",
+    ".write": "auth != null"
   }
 }
