@@ -1,128 +1,180 @@
-# THERMO CHAMPIONS: HEAT EDITION 🏆🔥
-### Media Pembelajaran Sains IPA SMP Kelas VII — Materi Pokok Kalor & Perpindahannya
-> **Tagline:** *"Master the Heat & Energy. Become the Champion."*
-
-Aplikasi web turnamen sains edukatif interaktif berbasis kompetisi antarkelompok kelas VII SMP dengan arsitektur **Multiplayer Realtime Multi-Device**. 8 kelompok siswa bertanding secara serentak dari smartphone/tablet masing-masing di bawah kendali 1 Game Master / Guru melalui Dashboard Admin.
+# THERMO CHAMPIONS: HEAT EDITION
+> **Permainan Pembelajaran IPA Fisika Materi KALOR untuk Siswa SMP**  
+> *Format Kompetisi Akademik Terinspirasi dari Clash of Champions*
 
 ---
 
-## 🚀 1. STACK TEKNOLOGI
+## 1. Tentang Aplikasi
 
-Aplikasi ini dibangun murni menggunakan **3 Teknologi Frontend Inti**:
+**THERMO CHAMPIONS: HEAT EDITION** adalah aplikasi web edukasi interaktif multiplayer yang dirancang khusus untuk pembelajaran materi **KALOR** tingkat Sekolah Menengah Pertama (SMP). Aplikasi ini memungkinkan hingga **8 kelompok siswa** bertanding secara serentak menggunakan perangkat masing-masing (1 perangkat per kelompok) dengan sinkronisasi waktu dan papan skor (leaderboard) secara *realtime*.
 
-1. **HTML5** — Untuk struktur semantik halaman mobile-first yang bersih, cepat, dan aksesibel.
-2. **CSS3** — Untuk desain tampilan, layout modern (Flexbox & CSS Grid), animasi halus, responsivitas multi-device (smartphone, tablet, laptop, desktop), dan Custom Properties (CSS Variables).
-3. **Vanilla JavaScript (ES Modules)** — Untuk seluruh logika aplikasi, interaksi antarmuka, state management, timer drift-free, dan sound synthesizer tanpa library eksternal.
-
-### 🚫 Ketentuan Wajib Bebas Framework:
-- **TANPA** React, Vue, Angular, atau Next.js
-- **TANPA** TypeScript
-- **TANPA** Tailwind CSS atau Bootstrap
-- **TANPA** jQuery atau library komponen tambahan
-- **Bukan** framework berbasis komponen
-- Menggunakan CSS murni dan JavaScript ES Modules (`import`/`export`) native peramban.
-
-### 🛠️ Layanan Pendukung:
-- **Firebase Realtime Database:** Penyimpanan realtime, atomic slot locking 8 kelompok, dan live leaderboard synchronization.
-- **Firebase Authentication:** Otentikasi anonim untuk mengamankan identitas perangkat siswa dan admin.
-- **Firebase Cloud Functions:** Validasi server-side kunci jawaban materi kalor, pencegahan cheat, dan kalkulasi skor di backend.
-- **Firebase Security Rules:** Perlindungan data sesi, grup, dan jawaban (`database.rules.json`).
-- **Vercel:** Hosting statis frontend tanpa proses build rumit.
-- **Web Audio API:** Sintesis efek suara cerdas (zero MP3 file).
-- **HTML5 Canvas:** Efek konfeti perayaan kemenangan.
+### Tujuan Pembelajaran:
+- Memahami konsep dasar kalor sebagai energi yang berpindah akibat perbedaan suhu.
+- Menguasai macam-macam perpindahan kalor: **Konduksi**, **Konveksi**, dan **Radiasi**.
+- Mengklasifikasikan bahan **Konduktor** dan **Isolator** panas.
+- Memahami 6 perubahan wujud zat yang menyerap atau melepas kalor.
+- Mahir menghitung kalor dengan rumus:
+  - $Q = m \times c \times \Delta T$ (Kalor kenaikan suhu)
+  - $Q = C \times \Delta T$ (Kapasitas kalor)
+  - $Q = m \times L$ (Kalor lebur/laten)
+  - $Q = m \times U$ (Kalor penguapan)
+  - Menentukan variabel yang belum diketahui ($c = \frac{Q}{m \times \Delta T}$, $m = \frac{Q}{c \times \Delta T}$)
+  - Kalkulasi bertahap (*heat chain* & peleburan es + pemanasan air).
 
 ---
 
-## 📂 2. STRUKTUR PROYEK
+## 2. Struktur 3 Game & Sistem Penilaian
+
+Total skor maksimal yang dapat diperoleh kelompok adalah **100 Poin**.
+
+| No | Babak Permainan | Konsep & Mekanisme | Skor Maksimal |
+|:---:|---|---|:---:|
+| **1** | **Shuffle and Recall** | Uji memori termal: Fase Menghafal 10 kartu konsep (35s) dilanjutkan dengan Fase Menyusun & Mencocokkan 10 tantangan (75s). Dilengkapi bonus penyelesaian sempurna (+5 pts). | **30 Pts** |
+| **2** | **Word Scramble** | Susun huruf acak magnetis menjadi istilah fisika kalor dengan tingkatan *Easy*, *Medium*, dan *Extreme*. Dilengkapi batas waktu per kata (18–20s) dan *speed bonus*. | **35 Pts** |
+| **3** | **Extreme Addition: Heat Calculation** | Stasiun laboratorium perhitungan fisika kalor: 10 soal kuantitatif bertingkat dengan bantuan rumus, parameter terstruktur, validasi desimal/ribuan, serta pembahasan ilmiah instan. | **35 Pts** |
+| | **TOTAL KESELURUHAN** | | **100 Pts** |
+
+### Predikat Akhir:
+- **86 – 100 Poin**: 🏆 **Thermo Champion**
+- **76 – 85 Poin**: ⚡ **Thermo Expert**
+- **66 – 75 Poin**: 🔬 **Science Challenger**
+- **56 – 65 Poin**: 🧭 **Thermo Explorer**
+- **0 – 55 Poin**: 🧪 **Temperature Rookie**
+
+---
+
+## 3. Teknologi yang Digunakan
+
+- **Frontend**:
+  - HTML5 & CSS3 modern (CSS Grid, Flexbox, CSS Variables, Glassmorphism).
+  - Vanilla JavaScript (ES Modules).
+  - Web Audio API (procedural audio synthesizer tanpa dependensi file eksternal).
+  - HTML5 Canvas (animasi partikel konveksi energi termal).
+  - *Bebas dari React, Vue, Angular, TypeScript, Tailwind, atau Bootstrap sesuai instruksi ketat.*
+- **Backend & Database**:
+  - **Firebase Authentication** (Anonymous auth & Admin token).
+  - **Firebase Realtime Database (RTDB)** untuk sinkronisasi state 8 kelompok dan server timer.
+  - **Firebase Cloud Functions** (`/functions`) untuk validasi jawaban aman dari kecurangan (*anti-cheat*), kalkulasi skor, dan speed bonus.
+  - **Firebase Security Rules** (`database.rules.json`).
+- **Resilient Hybrid Architecture**:
+  - Aplikasi dilengkapi dengan mesin sinkronisasi dual-engine (Firebase RTDB + BroadcastChannel/LocalStorage). Aplikasi dapat langsung diuji coba secara multi-tab lokal tanpa hambatan, serta langsung terkoneksi ke Firebase RTDB saat *online*.
+
+---
+
+## 4. Panduan Menjalankan Secara Lokal
+
+Untuk menjalankan frontend secara lokal:
+
+1. Buka terminal di folder project:
+   ```bash
+   cd d:\Kalor3
+   ```
+2. Jalankan server statis menggunakan Node.js:
+   ```bash
+   npx serve public
+   ```
+   *Atau gunakan ekstensi Live Server di VS Code mengarah ke folder `public/`.*
+3. Buka browser pada alamat yang diberikan (misalnya `http://localhost:3000`).
+4. Buka tab baru untuk menguji peran kelompok siswa dan peran Guru/Admin!
+
+---
+
+## 5. Panduan Penggunaan Guru / Admin
+
+1. Di halaman utama, pilih kartu **"Login Admin"**.
+2. Masukkan kode akses guru:
+   - **Passcode Default**: `THERMO2026`
+3. Klik tombol **"+ Sesi Baru"** untuk menghasilkan Kode Sesi 6 karakter (misal: `TC8492`).
+4. Bagikan kode tersebut ke 8 kelompok siswa di kelas.
+5. Guru dapat mengontrol jalannya permainan serentak menggunakan tombol fase:
+   - `Lobi Persiapan`: Tempat kelompok mendaftar dan menunggu.
+   - `Game 1: Menghafal (35s)`: Layar semua kelompok otomatis menampilkan 10 kartu konsep.
+   - `Game 1: Susun & Cocokkan (75s)`: Layar beralih ke kuis pencocokan.
+   - `Game 2: Word Scramble`: Memulai babak susun huruf acak.
+   - `Game 3: Extreme Addition`: Memulai babak kalkulasi kalor laboratorium.
+   - `Buka Leaderboard`: Menampilkan podium 3 besar dan klasemen akhir 8 kelompok.
+6. Klik **"📥 Unduh Rekap Hasil (CSV)"** untuk mengunduh rekap nilai kelompok lengkap dengan nama anggota dan nomor absen.
+7. Terdapat juga tombol **"⚡ Simulasi 8 Kelompok Uji"** untuk demonstrasi cepat langsung dengan 8 kelompok tiruan tanpa perlu membuka 8 perangkat berbeda.
+
+---
+
+## 6. Panduan Deployment
+
+### A. Hosting Frontend ke Vercel
+Project telah menyertakan konfigurasi `vercel.json`.
+1. Install Vercel CLI (jika belum):
+   ```bash
+   npm i -g vercel
+   ```
+2. Deploy langsung:
+   ```bash
+   vercel
+   ```
+   Atau hubungkan repositori Git ke dashboard [Vercel](https://vercel.com) dan tentukan root directory ke folder project ini.
+
+### B. Deployment Firebase (Cloud Functions & Database Rules)
+1. Masuk ke folder functions dan install dependensi:
+   ```bash
+   cd functions
+   npm install
+   cd ..
+   ```
+2. Deploy aturan database dan Cloud Functions menggunakan Firebase CLI:
+   ```bash
+   firebase deploy --only database,functions
+   ```
+
+---
+
+## 7. Struktur Direktori Proyek
 
 ```
-d:\Kalor2\
-├── index.html                  # Halaman Klien Siswa (Mobile-First HP/Tablet/Laptop)
-├── admin.html                  # Dashboard Game Master / Guru
-├── style.css                   # CSS Klien Siswa (Flexbox, CSS Grid & Custom Properties)
-├── admin.css                   # CSS Dashboard Guru
-├── vercel.json                 # Konfigurasi Vercel Deployment & Security Headers
-├── database.rules.json         # Aturan Keamanan Firebase Realtime Database
-├── firebase.json               # Konfigurasi Proyek Firebase (RTDB, Functions, Hosting)
-├── .env.example                # Panduan Variabel Lingkungan Firebase
-├── README.md                   # Dokumentasi Lengkap Proyek
-├── src/
-│   ├── data/
-│   │   └── questions.js        # Bank Soal Kalor, Kartu Memori, Rumus & Kriteria Predikat
+d:\Kalor3\
+├── public/                     # Frontend Vanilla JS ES Modules
+│   ├── index.html              # Entry point utama web
+│   ├── css/
+│   │   ├── main.css            # Desain sistem & variabel CSS
+│   │   ├── components.css      # Komponen tombol, kartu, input, timer
+│   │   ├── lobby.css           # Tampilan lobi, registrasi & panel admin
+│   │   ├── game1.css           # Gaya Game 1 (Shuffle & Recall)
+│   │   ├── game2.css           # Gaya Game 2 (Word Scramble)
+│   │   ├── game3.css           # Gaya Game 3 (Extreme Addition Lab)
+│   │   ├── leaderboard.css     # Podium juara & tabel klasemen
+│   │   └── responsive.css      # Responsivitas HP, tablet, laptop
 │   └── js/
-│       ├── app.js              # Controller Utama Siswa (Vanilla JS ES Modules)
-│       ├── admin.js            # Controller Utama Admin Guru (Vanilla JS ES Modules)
-│       ├── firebase/
-│       │   ├── config.js       # Inisialisasi Firebase Web Modular SDK v10/v11
-│       │   ├── auth.js         # Otentikasi Anonim untuk Perangkat Siswa & Guru
-│       │   ├── database.js     # Layanan RTDB: Atomic Slot 8 Kelompok, Timer & Leaderboard
-│       │   └── functions.js    # Pemanggil Cloud Functions dengan Fallback RTDB Klien
-│       ├── game/
-│       │   ├── state.js        # State Management & Pemulihan Sesi (Rehydration)
-│       │   ├── star-champ.js   # Mode 1: StarChamp Kalor & Azas Black (10 PG, 35 Poin)
-│       │   ├── memory-madness.js# Mode 2: Memory Madness Kalor (Hafal 30s + Recall, 30 Poin)
-│       │   └── number-chains.js# Mode 3: Number Chains Hitungan Kalor (5 Tahap, 35 Poin)
-│       └── utils/
-│           ├── timer.js        # Sinkronisasi Timer Server /.info/serverTimeOffset
-│           ├── sounds.js       # Sintesis Efek Suara Web Audio API Murni
-│           └── ui.js           # Notifikasi Toast, Dialog Modal & Canvas Confetti
-└── functions/
-    ├── package.json            # Dependensi Node.js Cloud Functions
-    └── index.js                # Backend Functions: Validasi Kunci Jawaban & Anti-Cheat
+│       ├── app.js              # Router utama dan bootstrap aplikasi
+│       ├── config/
+│       │   └── firebase-config.js # Konfigurasi Firebase SDK
+│       ├── services/
+│       │   ├── firebase-service.js# Mesin sinkronisasi RTDB & time offset
+│       │   ├── audio-service.js   # Synthesizer audio prosedural Web Audio
+│       │   ├── particle-service.js# Animasi partikel konveksi termal canvas
+│       │   └── export-service.js  # Generator unduh file CSV guru
+│       ├── data/
+│       │   ├── predicates.js      # Threshold skor dan lencana predikat
+│       │   └── questions-bank.js  # Bank soal & petunjuk rumus lengkap
+│       ├── components/
+│       │   ├── timer.js           # Countdown timer sinkron SVG
+│       │   ├── modal.js           # Modal dialog futuristik
+│       │   └── notification.js    # Sistem toast notifikasi
+│       └── views/
+│           ├── home-view.js       # Halaman awal pemilihan peran
+│           ├── register-view.js   # Form registrasi kelompok & anggota
+│           ├── waiting-view.js    # Ruang tunggu tersinkronisasi
+│           ├── admin-view.js      # Pusat kendali instruktur/guru
+│           ├── game1-view.js      # Game 1: Shuffle and Recall
+│           ├── game2-view.js      # Game 2: Word Scramble
+│           ├── game3-view.js      # Game 3: Extreme Addition
+│           └── leaderboard-view.js# Klasemen podium & penganugerahan
+├── functions/                  # Firebase Cloud Functions (Node.js)
+│   ├── package.json
+│   ├── index.js                # Cloud Functions endpoints (createSession, submit, dll.)
+│   ├── data/
+│   │   └── question-bank.js    # Kunci jawaban rahasia aman di server
+│   └── lib/
+│       └── scoring.js          # Mesin evaluasi skor & anti-cheat
+├── database.rules.json         # Aturan keamanan Firebase RTDB
+├── firebase.json               # Konfigurasi deployment Firebase
+├── vercel.json                 # Konfigurasi deployment Vercel
+└── README.md                   # Dokumentasi lengkap
 ```
-
----
-
-## ⚡ 3. TIGA ARENA TANTANGAN TURNAMEN (TOTAL 100 POIN)
-
-| Arena | Nama Arena | Materi & Mekanisme | Bobot Skor |
-| :--- | :--- | :--- | :--- |
-| **Mode 1** | **StarChamp Challenge** | 10 Soal Pilihan Ganda cepat materi konsep kalor, tara kalor mekanik (1 kalori = 4,2 J), kalor jenis, kalor laten, Azas Black, dan perpindahan kalor (konduksi, konveksi, radiasi). Timer 30 detik/soal. | **35 Poin** (3,5 poin/soal) |
-| **Mode 2** | **Memory Madness** | **Fase 1 (Memorize):** 30 detik menghafal 10 kartu fakta penting (rumus $Q = m \cdot c \cdot \Delta T$, $Q = m \cdot L$, konstanta kalor jenis air 4.200 J/kg°C, kalor lebur es 336.000 J/kg).<br>**Fase 2 (Recall):** 10 tantangan uji ingatan cepat (timer 25 detik/soal). | **30 Poin** (3,0 poin/soal) |
-| **Mode 3** | **Number Chains** | 5 Tahap perhitungan kalor bertingkat:<br>• Tahap 1: Kalor pemanasan air sederhana ($Q = m \cdot c \cdot \Delta T$)<br>• Tahap 2: Kalor lebur es ($Q = m \cdot L$)<br>• Tahap 3: Menentukan kenaikan suhu ($\Delta T = Q / (m \cdot c)$)<br>• Tahap 4: Kapasitas kalor bejana ($C = Q / \Delta T$)<br>• Tahap 5: Rantai bertingkat es $0^\circ\text{C}$ melebur lalu dipanaskan hingga $100^\circ\text{C}$ | **35 Poin** (7 poin/tahap) |
-| **TOTAL** | **Akademik Kalor IPA** | **3 Arena Pertandingan Kelompok** | **100 Poin Maksimal** |
-
-### 🏆 Skala Predikat Pencapaian Resmi:
-- **86 – 100 Poin:** 🏆 `THERMO CHAMPION` (Penguasaan materi kalor & termodinamika tingkat master)
-- **76 – 85 Poin:** 🥇 `HEAT EXPERT` (Pemahaman konsep, rumus, dan Azas Black sangat matang)
-- **66 – 75 Poin:** 🥈 `SCIENCE CHALLENGER` (Penalaran sains dan memori rumus memuaskan)
-- **56 – 65 Poin:** 🥉 `HEAT EXPLORER` (Cukup baik, perlu ketelitian dalam menghitung kalor laten)
-- **0 – 55 Poin:** 🌱 `THERMAL ROOKIE` (Perlu mengulang modul materi konsep dasar kalor)
-
----
-
-## 📱 4. PANDUAN PENGGUNAAN DI KELAS
-
-### A. Alur Guru (Game Master Admin):
-1. Buka `admin.html` di laptop Guru (dapat diproyeksikan ke layar proyektor kelas).
-2. Klik **➕ Buat Sesi Baru**, isi nama sesi (misal: *Turnamen Kalor VII-A*), lalu klik **Buat Sesi**.
-3. Guru mendapatkan **Kode Sesi 6 Karakter** (misal: `TC-7929`) atau dapat mengklik tombol **🔗 Salin Link HP Siswa**.
-4. Guru memantau **Status 8 Kelompok** di ruang tunggu secara live.
-5. Saat ke-8 kelompok telah masuk dan siap di ruang tunggu, Guru menekan tombol hero besar:
-   🚀 **"MULAI BERSAMA SELURUH KELOMPOK"**
-6. Seluruh HP siswa secara serentak menghitung mundur **3... 2... 1... MULAI!** dan masuk ke arena pertandingan.
-7. Guru memantau pergerakan nilai secara langsung di tabel **Papan Peringkat Real-Time** dan dapat mengunduh rekap hasil akhir dengan tombol **📊 Unduh CSV**.
-
-### B. Alur Kelompok Siswa:
-1. Satu perwakilan kelompok membuka `index.html` di HP/smartphone mereka.
-2. Masukkan **Kode Sesi** dari Guru (atau buka link langsung dari Guru).
-3. Pilih nomor kelompok (Kelompok 1 sampai 8). Sistem atomic locking otomatis mencegah 2 kelompok mengambil nomor yang sama.
-4. Masukkan **Nama Kelompok** dan daftar **Anggota Tim beserta nomor absen**.
-5. Klik **Konfirmasi dan Mulai**. Perangkat masuk ke **Ruang Tunggu (Lobby)**.
-6. Tunggu sinyal mulai dari Guru di depan kelas.
-7. Kerjakan ketiga mode tantangan bersama-sama hingga tuntas.
-8. Lihat hasil akhir nilai kumulatif, predikat, piagam penghargaan, dan peringkat kelas!
-
----
-
-## 🌐 5. DEPLOYMENT KE VERCEL
-
-Proyek ini telah dikonfigurasi secara lengkap untuk Vercel melalui `vercel.json`:
-1. Push repositori ke GitHub / GitLab / Bitbucket.
-2. Buka [Vercel Dashboard](https://vercel.com/) dan impor repositori.
-3. Karena proyek menggunakan Vanilla HTML/CSS/JS murni:
-   - **Framework Preset:** `Other`.
-   - **Build Command:** *(kosongkan)*.
-   - **Output Directory:** `.` *(root)*.
-4. Klik **Deploy**.
-5. Website langsung siap diakses secara online oleh seluruh siswa di kelas!
