@@ -176,10 +176,11 @@ class ThermoAdminApp {
           showToast('Belum ada sesi aktif!', 'warning');
           return;
         }
-        const origin = window.location.origin + window.location.pathname.replace(/admin\.html.*$/, 'index.html');
+        const cleanBase = window.location.href.split('?')[0].replace(/\/admin(?:\.html)?\/?$/, '');
+        const studentUrl = cleanBase + '/index.html';
         const cfg = getFirebaseConfig();
         const dbParam = cfg && cfg.databaseURL ? `&db=${encodeURIComponent(cfg.databaseURL)}` : '';
-        const link = `${origin}?session=${this.currentSession.sessionCode}${dbParam}`;
+        const link = `${studentUrl}?session=${this.currentSession.sessionCode}${dbParam}`;
         navigator.clipboard.writeText(link);
         showToast('Link HP Siswa (dengan sinkronisasi database) disalin! Bagikan ke grup kelas.', 'success');
       });

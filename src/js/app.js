@@ -50,6 +50,10 @@ class ThermoClientApp {
     // Check for existing session rehydration
     if (gameState.session && gameState.group) {
       this.rehydrateSession();
+    } else if (sessionCodeParam) {
+      this.showView('register');
+      this.renderGroupSlotsGrid();
+      this.verifySessionCode();
     } else {
       this.showView('landing');
     }
