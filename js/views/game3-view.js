@@ -133,9 +133,9 @@ export function renderGame3View(container, { sessionCode, teamNumber, onGameComp
       </div>
     `;
 
-    // Initialize Timer (120s total or synchronized)
+    // Initialize or re-attach Timer (120s total or synchronized)
+    const timerBox = container.querySelector('#g3-timer-container');
     if (!timerInstance) {
-      const timerBox = container.querySelector('#g3-timer-container');
       firebaseService.getSession(sessionCode).then((session) => {
         const startTime = session?.phaseStartTime || Date.now();
         const duration = session?.settings?.game3TotalTime || 120;
@@ -151,6 +151,8 @@ export function renderGame3View(container, { sessionCode, teamNumber, onGameComp
           }
         });
       });
+    } else {
+      timerInstance.setContainer(timerBox);
     }
 
     const form = container.querySelector('#form-heat-calc');

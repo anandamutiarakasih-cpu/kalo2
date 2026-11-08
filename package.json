@@ -1,6 +1,7 @@
 {
   "name": "thermo-champions-heat-edition",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
   "description": "Thermo Champions: Heat Edition - Permainan Pembelajaran IPA Kalor SMP",
   "scripts": {

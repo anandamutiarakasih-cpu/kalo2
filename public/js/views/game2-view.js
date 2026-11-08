@@ -13,6 +13,7 @@ export function renderGame2View(container, { sessionCode, teamNumber, onGameComp
   let currentIndex = 0;
   let timerInstance = null;
   let sessionUnsubscribe = null;
+  let currentKeyHandler = null;
   let currentWordScore = 0;
   let totalScoreG2 = 0;
   let selectedTiles = []; // indices of scrambled letters placed in answer slot
@@ -209,6 +210,10 @@ export function renderGame2View(container, { sessionCode, teamNumber, onGameComp
         }
       }
     };
+    if (currentKeyHandler) {
+      window.removeEventListener('keydown', currentKeyHandler);
+    }
+    currentKeyHandler = keyHandler;
     window.addEventListener('keydown', keyHandler);
 
     // Update Answer Slots display
@@ -317,6 +322,10 @@ export function renderGame2View(container, { sessionCode, teamNumber, onGameComp
   }
 
   function cleanup() {
+    if (currentKeyHandler) {
+      window.removeEventListener('keydown', currentKeyHandler);
+      currentKeyHandler = null;
+    }
     if (timerInstance) timerInstance.destroy();
     if (sessionUnsubscribe) sessionUnsubscribe();
   }

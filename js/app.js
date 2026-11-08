@@ -5,6 +5,7 @@
 
 import { particleService } from './services/particle-service.js';
 import { firebaseService } from './services/firebase-service.js';
+import { toast } from './components/notification.js';
 import { renderHomeView } from './views/home-view.js';
 import { renderRegisterView } from './views/register-view.js';
 import { renderWaitingView } from './views/waiting-view.js';
@@ -32,7 +33,39 @@ class ThermoChampionsApp {
       particleService.init(this.canvas);
     }
 
-    // Check for existing saved team session (survive page refresh / reconnect)
+    // Confirmation warning on refresh or leaving while inside active session
+    window.addEventListener('beforeunload', (e) => {
+      if (this.currentRoute && this.currentRoute !== 'home') {
+        e.preventDefault();
+        const msg = 'Data permainan akan di-reset dan Anda akan kembali ke menu awal jika halaman dimuat ulang.';
+        e.returnValue = msg;
+        return msg;
+      }
+    });
+
+    // Detect if page was refreshed/reloaded
+    const isReloaded = this.detectReload();
+    if (isReloaded) {
+      // Clear stored session and reset state as requested
+      firebaseService.clearStoredTeamSession();
+      this.state.sessionCode = null;
+      this.state.teamNumber = null;
+
+      // Clean query string from URL so it doesn't auto-redirect
+      try {
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      } catch (e) {}
+
+      this.navigate('home');
+      setTimeout(() => {
+        toast.warning('Halaman dimuat ulang: Data sesi telah di-reset dan kembali ke menu awal.');
+      }, 400);
+      return;
+    }
+
+    // Normal non-reload entry: Check for existing saved team session
     const stored = firebaseService.getStoredTeamSession();
     if (stored && stored.sessionCode && stored.teamNumber) {
       this.state.sessionCode = stored.sessionCode;
@@ -56,6 +89,19 @@ class ThermoChampionsApp {
         this.navigate('home');
       }
     }
+  }
+
+  detectReload() {
+    try {
+      const navEntries = performance.getEntriesByType('navigation');
+      if (navEntries && navEntries.length > 0) {
+        return navEntries[0].type === 'reload';
+      }
+      if (window.performance && window.performance.navigation) {
+        return window.performance.navigation.type === 1;
+      }
+    } catch (e) {}
+    return false;
   }
 
   async reconnectSession(sessionCode, teamNumber) {
