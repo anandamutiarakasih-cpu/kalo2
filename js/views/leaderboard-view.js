@@ -142,9 +142,49 @@ export function renderLeaderboardView(container, { sessionCode, teamNumber, onHo
     if (!session) return;
     currentSession = session;
 
-    const teams = Object.values(session.teams || {});
-    // Sort descending by total score
-    teams.sort((a, b) => (b.scores?.total || 0) - (a.scores?.total || 0));
+    const rawTeams = Object.values(session.teams || {});
+    // Filter to claimed/active teams or include all 8 teams
+    const teams = rawTeams.filter((t) => t && (t.claimed || (t.scores?.total || 0) > 0));
+    
+    // Sort descending with deterministic multi-tier tie-breakers:
+    // 1. Total score desc
+    // 2. Game 3 score desc
+    // 3. Game 2 score desc
+    // 4. Game 1 score desc
+    // 5. Team number asc
+    teams.sort((a, b) => {
+      const totalA = a.scores?.total || 0;
+      const totalB = b.scores?.total || 0;
+      if (totalB !== totalA) return totalB - totalA;
+
+      const g3A = a.scores?.game3 || 0;
+      const g3B = b.scores?.game3 || 0;
+      if (g3B !== g3A) return g3B - g3A;
+
+      const g2A = a.scores?.game2 || 0;
+      const g2B = b.scores?.game2 || 0;
+      if (g2B !== g2A) return g2B - g2A;
+
+      const g1A = a.scores?.game1 || 0;
+      const g1B = b.scores?.game1 || 0;
+      if (g1B !== g1A) return g1B - g1A;
+
+      return (a.number || 0) - (b.number || 0);
+    });
+
+    // Compute competitive rank (tied teams share same rank, e.g. 1, 1, 3)
+    let currentRank = 1;
+    teams.forEach((t, idx) => {
+      if (idx > 0) {
+        const prev = teams[idx - 1];
+        const prevTotal = prev.scores?.total || 0;
+        const curTotal = t.scores?.total || 0;
+        if (curTotal < prevTotal) {
+          currentRank = idx + 1;
+        }
+      }
+      t.displayRank = currentRank;
+    });
 
     // Render Podium Top 3 (2nd, 1st, 3rd layout)
     const first = teams[0] || null;
@@ -156,7 +196,7 @@ export function renderLeaderboardView(container, { sessionCode, teamNumber, onHo
       <div class="tc-podium-spot second">
         <div class="tc-podium-team">
           <div class="tc-podium-medal">🥈</div>
-          <div class="tc-podium-name">${second ? second.name : 'Kelompok -'}</div>
+          <div class="tc-podium-name">${second ? (second.name || `Kelompok ${second.number}`) : 'Kelompok -'}</div>
           <div class="tc-podium-score">${second ? (second.scores?.total || 0) : 0} PTS</div>
         </div>
         <div class="tc-podium-pedestal p2">
@@ -169,7 +209,7 @@ export function renderLeaderboardView(container, { sessionCode, teamNumber, onHo
         <div class="tc-podium-team">
           <div class="tc-podium-crown">👑</div>
           <div class="tc-podium-medal gold">🏆</div>
-          <div class="tc-podium-name">${first ? first.name : 'Kelompok -'}</div>
+          <div class="tc-podium-name">${first ? (first.name || `Kelompok ${first.number}`) : 'Kelompok -'}</div>
           <div class="tc-podium-score gold">${first ? (first.scores?.total || 0) : 0} PTS</div>
           <div class="tc-podium-predicate">${first ? (first.predicate || 'Thermo Champion') : '-'}</div>
         </div>
@@ -182,7 +222,7 @@ export function renderLeaderboardView(container, { sessionCode, teamNumber, onHo
       <div class="tc-podium-spot third">
         <div class="tc-podium-team">
           <div class="tc-podium-medal">🥉</div>
-          <div class="tc-podium-name">${third ? third.name : 'Kelompok -'}</div>
+          <div class="tc-podium-name">${third ? (third.name || `Kelompok ${third.number}`) : 'Kelompok -'}</div>
           <div class="tc-podium-score">${third ? (third.scores?.total || 0) : 0} PTS</div>
         </div>
         <div class="tc-podium-pedestal p3">
@@ -192,16 +232,18 @@ export function renderLeaderboardView(container, { sessionCode, teamNumber, onHo
     `;
 
     // Render Table Body
-    tableBody.innerHTML = teams.map((t, idx) => {
+    tableBody.innerHTML = teams.map((t) => {
       const pred = getPredicate(t.scores?.total || 0);
       const isMyTeam = teamNumber && t.number === parseInt(teamNumber, 10);
       const membersStr = (t.members || []).map((m) => `${m.name} (${m.absen})`).join(', ');
+      const rankNum = t.displayRank || 1;
+      const rankBadge = rankNum === 1 ? '🥇 1' : rankNum === 2 ? '🥈 2' : rankNum === 3 ? '🥉 3' : `${rankNum}`;
 
       return `
         <tr class="${isMyTeam ? 'highlight-my-team' : ''}">
           <td class="tc-col-rank">
-            <span class="tc-rank-badge ${idx < 3 ? `rank-${idx + 1}` : ''}">
-              ${idx === 0 ? '🥇 1' : idx === 1 ? '🥈 2' : idx === 2 ? '🥉 3' : idx + 1}
+            <span class="tc-rank-badge ${rankNum <= 3 ? `rank-${rankNum}` : ''}">
+              ${rankBadge}
             </span>
           </td>
           <td class="tc-col-name">

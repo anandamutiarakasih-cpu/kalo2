@@ -147,8 +147,15 @@ export function renderAdminView(container, { onExit }) {
         <!-- Live Teams Monitoring Grid (8 Teams) -->
         <div class="tc-admin-monitor-section">
           <div class="tc-monitor-header-row">
-            <h3 class="tc-monitor-title">Live Scoreboard 8 Kelompok</h3>
-            <span class="tc-live-indicator"><span class="tc-pulse-dot"></span> PEMBARUAN OTOMATIS</span>
+            <div>
+              <h3 class="tc-monitor-title">Live Scoreboard 8 Kelompok</h3>
+              <span class="tc-live-indicator"><span class="tc-pulse-dot"></span> PEMBARUAN OTOMATIS</span>
+            </div>
+            <div class="tc-sort-toggle-group">
+              <span class="tc-sort-label">Urutkan:</span>
+              <button type="button" id="btn-sort-team-num" class="tc-btn tc-btn-sm tc-btn-secondary active" title="Urutkan berdasarkan nomor kelompok 1-8">🔢 No. Kelompok</button>
+              <button type="button" id="btn-sort-score" class="tc-btn tc-btn-sm tc-btn-secondary" title="Urutkan berdasarkan skor tertinggi ke terendah">🏆 Skor Tertinggi</button>
+            </div>
           </div>
 
           <div class="tc-admin-teams-grid" id="admin-teams-grid">
@@ -313,6 +320,57 @@ export function renderAdminView(container, { onExit }) {
       }
     });
 
+    // Scoreboard Sorting Toggle
+    let adminSortBy = 'NUMBER'; // 'NUMBER' | 'SCORE'
+    const btnSortNum = dashEl.querySelector('#btn-sort-team-num');
+    const btnSortScore = dashEl.querySelector('#btn-sort-score');
+
+    function updateSortButtons() {
+      if (btnSortNum) btnSortNum.classList.toggle('active', adminSortBy === 'NUMBER');
+      if (btnSortScore) btnSortScore.classList.toggle('active', adminSortBy === 'SCORE');
+    }
+
+    if (btnSortNum) {
+      btnSortNum.addEventListener('click', () => {
+        audio.playClick();
+        adminSortBy = 'NUMBER';
+        updateSortButtons();
+        reorderGrid();
+      });
+    }
+
+    if (btnSortScore) {
+      btnSortScore.addEventListener('click', () => {
+        audio.playClick();
+        adminSortBy = 'SCORE';
+        updateSortButtons();
+        reorderGrid();
+      });
+    }
+
+    function reorderGrid() {
+      const grid = dashEl.querySelector('#admin-teams-grid');
+      if (!grid) return;
+      const order = [1, 2, 3, 4, 5, 6, 7, 8];
+      const teams = currentSessionData?.teams || {};
+
+      if (adminSortBy === 'SCORE') {
+        order.sort((a, b) => {
+          const ta = teams[`team_${a}`];
+          const tb = teams[`team_${b}`];
+          const totalA = ta?.scores?.total || 0;
+          const totalB = tb?.scores?.total || 0;
+          if (totalB !== totalA) return totalB - totalA;
+          return a - b;
+        });
+      }
+
+      order.forEach((n) => {
+        const card = grid.querySelector(`#admin-team-card-${n}`);
+        if (card) grid.appendChild(card);
+      });
+    }
+
     // Auto-create initial session if none exists
     btnCreateSession.click();
   }
@@ -371,6 +429,28 @@ export function renderAdminView(container, { onExit }) {
           totalEl.textContent = '0';
           predEl.textContent = 'Belum Aktif';
         }
+      }
+
+      // Re-order cards according to active sort setting
+      const grid = container.querySelector('#admin-teams-grid');
+      const sortBtnScore = container.querySelector('#btn-sort-score');
+      const isScoreSort = sortBtnScore?.classList.contains('active');
+      if (grid) {
+        const order = [1, 2, 3, 4, 5, 6, 7, 8];
+        if (isScoreSort) {
+          order.sort((a, b) => {
+            const ta = teams[`team_${a}`];
+            const tb = teams[`team_${b}`];
+            const totalA = ta?.scores?.total || 0;
+            const totalB = tb?.scores?.total || 0;
+            if (totalB !== totalA) return totalB - totalA;
+            return a - b;
+          });
+        }
+        order.forEach((n) => {
+          const card = grid.querySelector(`#admin-team-card-${n}`);
+          if (card) grid.appendChild(card);
+        });
       }
     });
   }
